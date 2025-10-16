@@ -1,0 +1,27 @@
+name: "CodeQL Custom Configuration"
+
+# Hangi sorguları çalıştıracağını belirt
+queries:
+  - name: security-and-quality
+    uses: security-and-quality
+  - name: security-extended
+    uses: security-extended
+
+# Özel sorgu paketi ekle
+query-filters:
+  - exclude:
+      id: java/hardcoded-credential-api-call  # Bazı kuralları hariç tutabilirsiniz
+
+# Özel sorgular
+# queries:
+#   - uses: ./.codeql/queries/performance-queries.qls
+
+# Hangi dosyaları tarayacağını belirt
+paths:
+  - src/main/java
+
+# Hangi dosyaları görmezden gelecek
+paths-ignore:
+  - src/test/**
+  - target/**
+  - .mvn/**

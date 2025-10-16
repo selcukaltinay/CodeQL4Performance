@@ -1,0 +1,50 @@
+name: "CodeQL Analizi"
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  schedule:
+    - cron: '0 0 * * 1'  # Her Pazartesi gece yarısı
+
+jobs:
+  analyze:
+    name: CodeQL Güvenlik ve Performans Analizi
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Java kurulumu
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        # Özel sorgular eklemek için:
+        queries: security-and-quality,security-extended
+        # config-file: ./.github/codeql/codeql-config.yml
+
+    - name: Maven ile proje derle
+      run: mvn clean compile
+
+    - name: CodeQL Analizi
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
